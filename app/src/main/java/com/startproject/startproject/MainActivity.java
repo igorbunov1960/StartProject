@@ -1,14 +1,13 @@
 package com.startproject.startproject;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.view.View;
 import android.widget.TextView;
+
+import static android.view.View.GONE;
 
 public class MainActivity extends Activity {
 
@@ -25,38 +24,22 @@ public class MainActivity extends Activity {
         mInView = findViewById(R.id.view1);
         mOutView = findViewById(R.id.view2);
 
-        crossfide(mInView, mOutView);
+        crossfade(mInView, mOutView);
 
     }
 
-    public void crossfide(final View inView, View outView) {
-        AnimatorSet set = new AnimatorSet();
+    public void crossfade(final View inView, View outView) {
+        inView.setAlpha(0f);
+        inView.setVisibility(View.VISIBLE);
+        inView.animate()
+                .alpha(1f)
+                .setDuration(5000)
+                .setInterpolator(new FastOutLinearInInterpolator());
 
-        set.playTogether(ObjectAnimator.ofFloat(outView, View.ALPHA, 1f, 0f),
-                ObjectAnimator.ofFloat(inView, View.ALPHA, 0f, 1f));
-
-        set.setDuration(10000);
-
-        set.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                mOutView.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onAnimationStart(Animator animation) {
-                super.onAnimationStart(animation);
-                mInView.setVisibility(View.VISIBLE);
-            }
-        });
-
-
-        set.start();
+        outView.animate()
+                .alpha(0f)
+                .setDuration(5000)
+                .setInterpolator(new FastOutLinearInInterpolator())
+                .withEndAction(() -> outView.setVisibility(GONE));
     }
-
-
-
-
-
 }

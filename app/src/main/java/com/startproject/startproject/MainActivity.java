@@ -3,25 +3,17 @@ package com.startproject.startproject;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
-import android.animation.ValueAnimator;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
-import android.support.v4.view.animation.LinearOutSlowInInterpolator;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
-    private TextView view1;
-    private TextView view2;
+    private TextView mInView;
+    private TextView mOutView;
 
 
     @Override
@@ -30,42 +22,41 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
 
-        view1 = findViewById(R.id.view1);
-        view2 = findViewById(R.id.view2);
+        mInView = findViewById(R.id.view1);
+        mOutView = findViewById(R.id.view2);
 
-        crossfide(view1, view2);
+        crossfide(mInView, mOutView);
 
     }
 
-    public void crossfide(final View view1, View view2) {
-
-        ValueAnimator valueAnimator1 = ValueAnimator.ofFloat(0f, 1f);
-        ValueAnimator valueAnimator2 = ValueAnimator.ofFloat(1f, 0f);
-
-        valueAnimator1.setInterpolator(new LinearOutSlowInInterpolator());
-        valueAnimator2.setInterpolator(new FastOutLinearInInterpolator());
-
-        valueAnimator1.addUpdateListener(animator -> view1.setAlpha((Float) animator.getAnimatedValue()));
-        valueAnimator2.addUpdateListener(animator -> view2.setAlpha((Float) animator.getAnimatedValue()));
-
+    public void crossfide(final View inView, View outView) {
         AnimatorSet set = new AnimatorSet();
-        set.playTogether(valueAnimator1, valueAnimator2);
-        set.setDuration(20000);
+
+        set.playTogether(ObjectAnimator.ofFloat(outView, View.ALPHA, 1f, 0f),
+                ObjectAnimator.ofFloat(inView, View.ALPHA, 0f, 1f));
+
+        set.setDuration(10000);
 
         set.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                view2.setVisibility(View.GONE);
+                mOutView.setVisibility(View.GONE);
             }
 
             @Override
             public void onAnimationStart(Animator animation) {
                 super.onAnimationStart(animation);
-                view1.setVisibility(View.VISIBLE);
+                mInView.setVisibility(View.VISIBLE);
             }
         });
 
+
         set.start();
     }
+
+
+
+
+
 }
